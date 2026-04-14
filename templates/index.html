@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Upload your resume</h2>
+<p>
+    We'll pull out the text, identify the skills we recognize, and
+    (optionally) compare it against a job description.
+</p>
+
+<form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+    <label for="resume">Resume file (PDF):</label>
+    <input type="file" name="resume" id="resume" accept=".pdf" required>
+
+    <label for="job_description">Job description (optional):</label>
+    <textarea
+        name="job_description"
+        id="job_description"
+        rows="10"
+        placeholder="Paste a job description here to see how well your resume matches it."
+    ></textarea>
+
+    <button type="submit">Analyze</button>
+</form>
+
+<hr>
+
+<h3>What's next</h3>
+<ul>
+    <li>Saving multiple resume versions and picking the best one per job</li>
+    <li>Skill gap suggestions and learning roadmap</li>
+    <li>Feedback-based learning to tune the match score over time</li>
+</ul>
+{% endblock %}

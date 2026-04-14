@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Results for {{ filename }}</h2>
+
+{% if match %}
+<div class="section">
+    <h3>Match score</h3>
+    <p class="big-score">{{ "%.0f"|format(match.overall_score * 100) }}%</p>
+    <p class="score-detail">
+        Skill overlap: {{ "%.0f"|format(match.skill_score * 100) }}%
+        &middot;
+        Text similarity: {{ "%.0f"|format(match.text_similarity * 100) }}%
+    </p>
+</div>
+
+<div class="section">
+    <h3>Matched skills ({{ match.matched_skills|length }})</h3>
+    {% if match.matched_skills %}
+        <div class="skills">
+            {% for skill in match.matched_skills %}
+                <span class="skill-tag">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="muted">No overlapping skills found.</p>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h3>Missing skills ({{ match.missing_skills|length }})</h3>
+    {% if match.missing_skills %}
+        <p class="muted">These appear in the job description but not on your resume:</p>
+        <div class="skills">
+            {% for skill in match.missing_skills %}
+                <span class="skill-tag missing">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="muted">Nothing missing. Nice.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="section">
+    <h3>All skills on resume ({{ skill_count }})</h3>
+    {% if skills %}
+        <div class="skills">
+            {% for skill in skills %}
+                <span class="skill-tag">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="muted">
+            No recognized skills found. Might need to expand the skill
+            dictionary, or the resume text could be formatted oddly.
+        </p>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h3>Extracted resume text</h3>
+    <pre class="text-preview">{{ text }}</pre>
+</div>
+
+<a href="{{ url_for('index') }}" class="back-link">&larr; Upload another resume</a>
+{% endblock %}
