@@ -14,6 +14,15 @@
     </p>
 </div>
 
+<!-- ✅ ADD BUTTON HERE -->
+{% if job_id %}
+<div class="section">
+    <a href="{{ url_for('best_match', job_id=job_id) }}">
+        <button type="button">Find Best Resume for This Job</button>
+    </a>
+</div>
+{% endif %}
+
 <div class="section">
     <h3>Matched skills ({{ match.matched_skills|length }})</h3>
     {% if match.matched_skills %}

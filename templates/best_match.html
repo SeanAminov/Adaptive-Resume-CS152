@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Best Resume for This Job</h2>
+
+<div class="section">
+    <h3>Top Match</h3>
+    <p><strong>Resume:</strong> {{ best_filename }}</p>
+    <p class="big-score">{{ "%.0f"|format(best_score * 100) }}%</p>
+</div>
+
+<div class="section">
+    <h3>Missing skills ({{ missing_skills|length }})</h3>
+    {% if missing_skills %}
+        <p class="muted">These are skills still missing from the best resume:</p>
+        <div class="skills">
+            {% for skill in missing_skills %}
+                <span class="skill-tag missing">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="muted">Nothing missing. This resume is a strong match.</p>
+    {% endif %}
+</div>
+
+<div class="section">
+    <a href="{{ url_for('index') }}" class="back-link">
+        &larr; Upload another resume
+    </a>
+</div>
+{% endblock %}

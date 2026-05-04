@@ -9,20 +9,32 @@ venv/
 .venv/
 env/
 .env
+.env.local
+.env.development
+.env.production
 
-# Uploaded resumes - don't want to commit these
+# Uploaded resumes
 uploads/
 
-# Databases (coming later)
+# Databases
 *.db
 *.sqlite
 *.sqlite3
+
+# Flask / runtime
+instance/
+*.log
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
 
 # OS junk
 .DS_Store
 Thumbs.db
 
-# IDE stuff
+# IDE
 .vscode/
 .idea/
 *.swp
