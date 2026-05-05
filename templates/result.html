@@ -8,17 +8,37 @@
     <h3>Match score</h3>
     <p class="big-score">{{ "%.0f"|format(match.overall_score * 100) }}%</p>
     <p class="score-detail">
+        Matched {{ match.matched_skills|length }} of {{ match.job_skills|length }} skills the job mentions.
+    </p>
+    <p class="score-detail">
         Skill overlap: {{ "%.0f"|format(match.skill_score * 100) }}%
         &middot;
         Text similarity: {{ "%.0f"|format(match.text_similarity * 100) }}%
+        &middot;
+        Weights: {{ "%.0f"|format(match.skill_weight * 100) }}/{{ "%.0f"|format(match.text_weight * 100) }}
+    </p>
+    <p class="score-detail muted">
+        Score = (skill weight &times; skill overlap) + (text weight &times; text similarity).
+        The weights shift slightly over time based on user feedback.
     </p>
 </div>
 
-<!-- ✅ ADD BUTTON HERE -->
+{% if match_id %}
+<div class="section">
+    <h3>Was this score useful?</h3>
+    <form action="{{ url_for('feedback', match_id=match_id, rating=1) }}" method="post" style="display:inline;">
+        <button type="submit">Thumbs up</button>
+    </form>
+    <form action="{{ url_for('feedback', match_id=match_id, rating=-1) }}" method="post" style="display:inline;">
+        <button type="submit">Thumbs down</button>
+    </form>
+</div>
+{% endif %}
+
 {% if job_id %}
 <div class="section">
     <a href="{{ url_for('best_match', job_id=job_id) }}">
-        <button type="button">Find Best Resume for This Job</button>
+        <button type="button">Find best resume for this job</button>
     </a>
 </div>
 {% endif %}
@@ -49,6 +69,25 @@
         <p class="muted">Nothing missing. Nice.</p>
     {% endif %}
 </div>
+
+{% if roadmap %}
+<div class="section">
+    <h3>Skill gap roadmap</h3>
+    <p class="muted">Suggested resources for closing each gap:</p>
+    <ul class="roadmap">
+        {% for skill, links in roadmap %}
+            <li>
+                <strong>{{ skill }}</strong>
+                <ul>
+                    {% for label, url in links %}
+                        <li><a href="{{ url }}" target="_blank" rel="noopener">{{ label }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 {% endif %}
 
 <div class="section">

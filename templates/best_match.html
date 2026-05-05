@@ -23,6 +23,24 @@
     {% endif %}
 </div>
 
+{% if roadmap %}
+<div class="section">
+    <h3>Skill gap roadmap</h3>
+    <ul class="roadmap">
+        {% for skill, links in roadmap %}
+            <li>
+                <strong>{{ skill }}</strong>
+                <ul>
+                    {% for label, url in links %}
+                        <li><a href="{{ url }}" target="_blank" rel="noopener">{{ label }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
 <div class="section">
     <a href="{{ url_for('index') }}" class="back-link">
         &larr; Upload another resume

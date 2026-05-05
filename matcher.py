@@ -9,12 +9,42 @@ from sklearn.metrics.pairwise import cosine_similarity
 from skill_extractor import compare_skills, extract_skills
 
 
-# Weights for combining the two scores.
-# Skill overlap matters more to us than general text similarity,
-# so skill_score gets weighted higher. We might tune this later
-# once the feedback-learning feature is in.
-SKILL_WEIGHT = 0.7
-TEXT_WEIGHT = 0.3
+# Default weights. We start at 70/30 in favor of skill overlap, but
+# get_current_weights() will shift this based on user feedback.
+DEFAULT_SKILL_WEIGHT = 0.7
+DEFAULT_TEXT_WEIGHT = 0.3
+
+# How far the weights are allowed to drift from the defaults
+# before we clamp them. Keeps a few angry users from breaking the
+# scoring entirely.
+MAX_SHIFT = 0.2
+
+
+def get_current_weights():
+    """
+    Pull aggregate feedback from the DB and nudge the weights.
+    More thumbs-up than thumbs-down means the current scoring is
+    working, so we leave it alone. More thumbs-down means people
+    don't agree with our scores - we lean a little harder on raw
+    skill overlap (which is the more interpretable of the two).
+    """
+    # Imported locally so this module doesn't require the DB to
+    # exist when used standalone (e.g. from a quick script).
+    try:
+        from db import get_connection
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT COALESCE(SUM(rating), 0) FROM feedback")
+        net = cursor.fetchone()[0] or 0
+        conn.close()
+    except Exception:
+        net = 0
+
+    # Each net downvote shifts weight 1% toward skills, capped.
+    shift = max(-MAX_SHIFT, min(MAX_SHIFT, -net * 0.01))
+    skill_w = DEFAULT_SKILL_WEIGHT + shift
+    text_w = 1.0 - skill_w
+    return skill_w, text_w
 
 
 def compute_text_similarity(resume_text, job_text):
@@ -58,7 +88,9 @@ def match_resume_to_job(resume_text, job_text):
 
     text_sim = compute_text_similarity(resume_text, job_text)
     skill_score = compute_skill_score(resume_skills, job_skills)
-    overall = (SKILL_WEIGHT * skill_score) + (TEXT_WEIGHT * text_sim)
+
+    skill_w, text_w = get_current_weights()
+    overall = (skill_w * skill_score) + (text_w * text_sim)
 
     return {
         'resume_skills': resume_skills,
@@ -68,4 +100,6 @@ def match_resume_to_job(resume_text, job_text):
         'text_similarity': text_sim,
         'skill_score': skill_score,
         'overall_score': overall,
+        'skill_weight': skill_w,
+        'text_weight': text_w,
     }

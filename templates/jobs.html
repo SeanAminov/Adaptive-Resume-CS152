@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Saved jobs</h2>
+<p class="muted">
+    Every job description you've pasted in is saved here, so you can
+    revisit the best-resume picker without re-uploading.
+</p>
+
+{% if jobs %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Saved</th>
+            <th>Resumes scored</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for job in jobs %}
+            <tr>
+                <td><a href="{{ url_for('view_job', job_id=job.id) }}">{{ job.title }}</a></td>
+                <td>{{ job.created_at }}</td>
+                <td>{{ job.match_count }}</td>
+                <td>
+                    {% if job.match_count > 0 %}
+                        <a href="{{ url_for('best_match', job_id=job.id) }}">Best match</a>
+                    {% else %}
+                        <span class="muted">No matches yet</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="muted">No jobs saved yet. Paste a job description on the upload page to get started.</p>
+{% endif %}
+
+<a href="{{ url_for('index') }}" class="back-link">&larr; Back to upload</a>
+{% endblock %}

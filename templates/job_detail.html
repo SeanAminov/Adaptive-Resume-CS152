@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ job.title }}</h2>
+<p class="muted">Saved: {{ job.created_at }}</p>
+
+<div class="section">
+    <h3>Rename</h3>
+    <form action="{{ url_for('rename_job', job_id=job.id) }}" method="post">
+        <input type="text" name="title" maxlength="100" value="{{ job.title }}"
+               style="width:70%; padding:6px; border:1px solid #000;">
+        <button type="submit">Save</button>
+    </form>
+</div>
+
+<div class="section">
+    <h3>Job description</h3>
+    <pre class="text-preview">{{ job.description }}</pre>
+</div>
+
+<div class="section">
+    <h3>Resumes scored against this job ({{ matches|length }})</h3>
+    {% if matches %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Resume</th>
+                    <th>Score</th>
+                    <th>Missing skills</th>
+                    <th>Scored</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in matches %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('view_resume', resume_id=m.resume_id) }}">
+                                {{ m.filename }}
+                            </a>
+                        </td>
+                        <td>{{ "%.0f"|format(m.score * 100) }}%</td>
+                        <td>{{ m.missing_skills|length }}</td>
+                        <td>{{ m.created_at }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p>
+            <a href="{{ url_for('best_match', job_id=job.id) }}">
+                <button type="button">Show best match</button>
+            </a>
+        </p>
+    {% else %}
+        <p class="muted">No resumes scored against this job yet.</p>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h3>Delete this job</h3>
+    <form action="{{ url_for('delete_job', job_id=job.id) }}" method="post"
+          onsubmit="return confirm('Delete this job and all its match records?');">
+        <button type="submit">Delete job</button>
+    </form>
+</div>
+
+<a href="{{ url_for('jobs') }}" class="back-link">&larr; Back to saved jobs</a>
+{% endblock %}

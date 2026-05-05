@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Saved resumes</h2>
+<p class="muted">
+    Every resume you've uploaded. You can clear out old versions you
+    don't want kept around.
+</p>
+
+{% if resumes %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Filename</th>
+            <th>Skills found</th>
+            <th>Uploaded</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in resumes %}
+            <tr>
+                <td><a href="{{ url_for('view_resume', resume_id=r.id) }}">{{ r.filename }}</a></td>
+                <td>{{ r.skill_count }}</td>
+                <td>{{ r.created_at or '-' }}</td>
+                <td>
+                    <form action="{{ url_for('delete_resume', resume_id=r.id) }}" method="post"
+                          onsubmit="return confirm('Delete this resume?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="muted">No resumes uploaded yet.</p>
+{% endif %}
+
+<a href="{{ url_for('index') }}" class="back-link">&larr; Back to upload</a>
+{% endblock %}

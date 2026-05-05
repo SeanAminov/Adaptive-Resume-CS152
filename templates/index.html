@@ -11,6 +11,11 @@
     <label for="resume">Resume file (PDF):</label>
     <input type="file" name="resume" id="resume" accept=".pdf" required>
 
+    <label for="job_title">Job title (optional):</label>
+    <input type="text" name="job_title" id="job_title" maxlength="100"
+           placeholder="e.g. Software Engineer Intern - Summer 2026"
+           style="width:100%; padding:6px; border:1px solid #000; margin-bottom:10px;">
+
     <label for="job_description">Job description (optional):</label>
     <textarea
         name="job_description"
@@ -22,12 +27,4 @@
     <button type="submit">Analyze</button>
 </form>
 
-<hr>
-
-<h3>What's next</h3>
-<ul>
-    <li>Saving multiple resume versions and picking the best one per job</li>
-    <li>Skill gap suggestions and learning roadmap</li>
-    <li>Feedback-based learning to tune the match score over time</li>
-</ul>
 {% endblock %}

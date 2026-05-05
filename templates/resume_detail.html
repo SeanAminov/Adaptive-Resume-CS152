@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ filename }}</h2>
+<p class="muted">Uploaded: {{ created_at or '-' }}</p>
+
+<div class="section">
+    <h3>Skills found ({{ skill_count }})</h3>
+    {% if skills %}
+        <div class="skills">
+            {% for skill in skills %}
+                <span class="skill-tag">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="muted">No recognized skills.</p>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h3>Extracted resume text</h3>
+    <pre class="text-preview">{{ text }}</pre>
+</div>
+
+<a href="{{ url_for('resumes') }}" class="back-link">&larr; Back to saved resumes</a>
+{% endblock %}
