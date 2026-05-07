@@ -428,8 +428,16 @@ def delete_resume(resume_id):
 # ----------------------------
 # Route: Submit feedback on a match
 # ----------------------------
-@app.route('/feedback/<int:match_id>/<int:rating>', methods=['POST'])
-def feedback(match_id, rating):
+@app.route('/feedback/<int:match_id>', methods=['POST'])
+def feedback(match_id):
+    # Rating comes from a hidden form field. Flask's <int:> URL
+    # converter does not accept negative numbers, so we keep it
+    # in the body instead.
+    try:
+        rating = int(request.form.get('rating', '0'))
+    except ValueError:
+        rating = 0
+
     if rating not in (1, -1):
         flash('Invalid rating.')
         return redirect(url_for('index'))
